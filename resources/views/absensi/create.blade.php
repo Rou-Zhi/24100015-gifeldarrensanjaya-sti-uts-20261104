@@ -95,7 +95,7 @@
             <!-- Daftar Mahasiswa -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h6 class="fw-bold mb-0">
-                    <x-fas-users class="text-success me-2" />
+                    <x-fas-users class="text-success me-2" style="width: 16px; height: 16px;" />
                     Daftar Mahasiswa
                 </h6>
 
