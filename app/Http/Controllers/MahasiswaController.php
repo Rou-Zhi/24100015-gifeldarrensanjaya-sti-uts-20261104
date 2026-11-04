@@ -12,7 +12,9 @@ class MahasiswaController extends Controller
      */
     public function index()
     {
-        return view('IndexMahasiswa', ['mahasiswas' => Mahasiswa::all()]);
+        $mahasiswa = Mahasiswa::latest()->get();
+
+        return view('mahasiswa.index', compact('mahasiswa'));
     }
 
     /**
@@ -20,7 +22,7 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        return view('createMahasiswa');
+        return view('mahasiswa.create');
     }
 
     /**
@@ -28,16 +30,17 @@ class MahasiswaController extends Controller
      */
     public function store(Request $request)
     {
-        $data = Mahasiswa::create([
-            'name' => $request->name,
-            'NIM' => $request->NIM,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'jurusan' => $request->jurusan,
-            'angkatan' => $request->angkatan
+        $validated = $request->validate([
+            'NIM' => 'required|string|max:255|unique:mahasiswas,NIM',
+            'name' => 'required|string|max:255',
+            'jurusan' => 'required|in:Bisnis Digital,Sistem dan Teknologi Informasi,Kewirausahaan',
         ]);
 
-        return redirect()->route('mahasiswa.index');
+        Mahasiswa::create($validated);
+
+        return redirect()
+            ->route('mahasiswa.index')
+            ->with('success', 'Data mahasiswa berhasil ditambahkan.');
     }
 
     /**
@@ -53,7 +56,9 @@ class MahasiswaController extends Controller
      */
     public function edit($id)
     {
-        
+        $mahasiswa = Mahasiswa::findOrFail($id);
+
+        return view('mahasiswa.edit', compact('mahasiswa'));
     }
 
     /**
@@ -61,7 +66,19 @@ class MahasiswaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        
+        $mahasiswa = Mahasiswa::findOrFail($id);
+
+        $validated = $request->validate([
+            'NIM' => 'required|string|max:255|unique:mahasiswas,NIM,' . $mahasiswa->id,
+            'name' => 'required|string|max:255',
+            'jurusan' => 'required|in:Bisnis Digital,Sistem dan Teknologi Informasi,Kewirausahaan',
+        ]);
+
+        $mahasiswa->update($validated);
+
+        return redirect()
+            ->route('mahasiswa.index')
+            ->with('success', 'Data mahasiswa berhasil diperbarui.');
     }
 
     /**
@@ -69,6 +86,12 @@ class MahasiswaController extends Controller
      */
     public function destroy($id)
     {
-        
+        $mahasiswa = Mahasiswa::findOrFail($id);
+
+        $mahasiswa->delete();
+
+        return redirect()
+            ->route('mahasiswa.index')
+            ->with('success', 'Data mahasiswa berhasil dihapus.');
     }
 }
